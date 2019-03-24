@@ -27,6 +27,7 @@ def get_weather_info_naver():
         today_data = bs_obj.find("div", {"class": "today_area _mainTabContent"})
         tomorrow_data = bs_obj.find("div", {"class": "tomorrow_area _mainTabContent"})
         day_after_tomorrow_data = bs_obj.find("div", {"class": "tomorrow_area day_after _mainTabContent"})
+        location = bs_obj.find("div", {"class": "sort_box _areaSelectLayer"}).div.div.span.em.get_text()
         days = {
             "today": {
                 "cast_txt": today_data.find("p", {"class": "cast_txt"}).get_text().replace("아요", "습니다."),
@@ -51,26 +52,35 @@ def get_weather_info_naver():
 
     except AttributeError as e:
         return None
-    return days
+    return {
+        'days': days,
+        'location': location
+    }
 
 
-weather_info = get_weather_info_naver()
-today_weather_info = weather_info['today']
-tomorrow_weather_info = weather_info['tomorrow']
-day_after_tomorrow_weather_info = weather_info['day_after_tomorrow']
-print(weather_info)
+def print_all_weather_info():
+    weather_info = get_weather_info_naver()
+    location_info = weather_info['location'].strip()
 
-print("오늘 날씨입니다.")
-print("오늘의 날씨는 " + today_weather_info['cast_txt'])
-print("오늘의 온도는 " + today_weather_info['temp'] + "℃이며, 최저 " + today_weather_info['temp_max'] + "℃, 최고 " +
-      today_weather_info['temp_min'] + "℃ 입니다.")
-print("오늘의 미세먼지는 " + today_weather_info['fine_dust'] + ", 초미세먼지는 " + today_weather_info['ultra_fine_dust'] + "입니다.")
+    today_weather_info = weather_info['days']['today']
+    tomorrow_weather_info = weather_info['days']['tomorrow']
+    day_after_tomorrow_weather_info = weather_info['days']['day_after_tomorrow']
 
-print("\n내일 날씨입니다.")
-print("내일의 오전 온도는 " + tomorrow_weather_info['temp_am'] + "℃, 오후 온도는 " + tomorrow_weather_info['temp_pm'] + "℃ 입니다.")
-print("내일의 미세먼지는 \"" + tomorrow_weather_info['fine_dust_status'] + "\" 입니다.")
+    print(location_info + "의 날씨를 알려드립니다.")
+    print("\n오늘 날씨입니다.")
+    print("오늘의 날씨는 " + today_weather_info['cast_txt'])
+    print("오늘의 온도는 " + today_weather_info['temp'] + "℃이며, 최저 " + today_weather_info['temp_max'] + "℃, 최고 " +
+          today_weather_info['temp_min'] + "℃ 입니다.")
+    print("오늘의 미세먼지는 " + today_weather_info['fine_dust'] + ", 초미세먼지는 " + today_weather_info['ultra_fine_dust'] + "입니다.")
 
-print("\n모레 날씨입니다.")
-print("모레의 오전 온도는 " + day_after_tomorrow_weather_info['temp_am'] + "℃, 오후 온도는 " + day_after_tomorrow_weather_info[
-    'temp_pm'] + "℃ 입니다.")
-print("모레의 미세먼지는 \"" + day_after_tomorrow_weather_info['fine_dust_status'] + "\" 입니다.")
+    print("\n내일 날씨입니다.")
+    print("내일의 오전 온도는 " + tomorrow_weather_info['temp_am'] + "℃, 오후 온도는 " + tomorrow_weather_info['temp_pm'] + "℃ 입니다.")
+    print("내일의 미세먼지는 \"" + tomorrow_weather_info['fine_dust_status'] + "\" 입니다.")
+
+    print("\n모레 날씨입니다.")
+    print("모레의 오전 온도는 " + day_after_tomorrow_weather_info['temp_am'] + "℃, 오후 온도는 " + day_after_tomorrow_weather_info[
+        'temp_pm'] + "℃ 입니다.")
+    print("모레의 미세먼지는 \"" + day_after_tomorrow_weather_info['fine_dust_status'] + "\" 입니다.")
+
+
+print_all_weather_info()
